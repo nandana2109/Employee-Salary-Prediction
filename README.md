@@ -94,7 +94,7 @@ streamlit run app.py
 
 - Accuracy Comparison Graph:
 
-![Accuracy Graph](model comparasion.png)
+![Accuracy Graph](model_comparison.png)
 
 ---
 
