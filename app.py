@@ -46,20 +46,24 @@ gender_map = {"Male": 1, "Female": 0}
 
 # Streamlit UI
 st.set_page_config(page_title="Employee Salary Classification", page_icon="💼", layout="centered")
-st.title("💼 Employee Salary Classification App")
-st.markdown("Predict whether an employee earns >50K or ≤50K based on input features.")
+st.markdown("<h2 style='text-align: center;'>💼 Employee Salary Classification App</h2>", unsafe_allow_html=True)
+st.markdown("<p style='text-align: center;'>Predict whether an employee earns >50K or ≤50K based on input features.</p>", unsafe_allow_html=True)
 
-st.sidebar.header("Input Employee Details")
+st.divider()
 
-# Input collection
-age = st.sidebar.slider("Age", 18, 65, 30)
-occupation = st.sidebar.selectbox("Occupation", list(occupation_map.keys()))
-hours_per_week = st.sidebar.slider("Hours per week", 1, 80, 40)
-gender = st.sidebar.selectbox("Gender", list(gender_map.keys()))
-marital_status = st.sidebar.selectbox("Marital Status", list(marital_status_map.keys()))
-workclass = st.sidebar.selectbox("Workclass", list(workclass_map.keys()))
-education = st.sidebar.selectbox("Education", list(education_map.keys()))
-experience = st.sidebar.slider("Years of Experience", 0, 40, 5)
+col1, col2 = st.columns(2)
+
+with col1:
+    education = st.selectbox("Education", list(education_map.keys()))
+    workclass = st.selectbox("Workclass", list(workclass_map.keys()))
+    occupation = st.selectbox("Occupation", list(occupation_map.keys()))
+    marital_status = st.selectbox("Marital Status", list(marital_status_map.keys()))
+    gender = st.selectbox("Gender", list(gender_map.keys()))
+
+with col2:
+    age = st.slider("Age", 18, 65, 30)
+    experience = st.slider("Years of Experience", 0, 40, 5)
+    hours_per_week = st.slider("Hours per week", 1, 80, 40)
 
 # readable dataframe for UI display
 display_df = pd.DataFrame({
@@ -85,67 +89,53 @@ input_df = pd.DataFrame({
     'experience': [experience]
 })
 
-# Show readable input
 st.write("### 🔍 Input Data")
 st.write(display_df)
 
-# Predict button
 if st.button("Predict Salary Class"):
     prediction = model.predict(input_df)
-
-    # Format prediction nicely
     if prediction[0] == "<=50K":
         st.success("✅ Prediction: Estimated Salary is  ≤ 50,000")
     else:
         st.success("✅ Prediction: Estimated Salary is  > 50,000")
 
-# Batch Prediction Section
-st.markdown("---")
+st.divider()
+
 st.markdown("#### 📂 Batch Prediction")
-uploaded_file = st.file_uploader("Upload a Cleaned CSV file for batch prediction", type="csv")
+uploaded_file = st.file_uploader("Upload a  CSV file for batch prediction", type="csv")
 
 if uploaded_file is not None:
     batch_data = pd.read_csv(uploaded_file)
     st.write("📄 Uploaded data preview:", batch_data.head())
 
-    try:
-        # Map categorical columns
-        categorical_cols = ['workclass', 'marital-status', 'occupation', 'gender']
-        mapping_dicts = {
-            'workclass': workclass_map,
-            'education': education_map,
-            'marital-status': marital_status_map,
-            'occupation': occupation_map,
-            'gender': gender_map
-        }
+    categorical_cols = ['workclass', 'marital-status', 'occupation', 'gender']
+    mapping_dicts = {
+        'workclass': workclass_map,
+        'education': education_map,
+        'marital-status': marital_status_map,
+        'occupation': occupation_map,
+        'gender': gender_map
+    }
 
-        for col in categorical_cols:
-            batch_data[col] = batch_data[col].map(mapping_dicts[col])
-            # Fill any unmapped category with -1
-            batch_data[col].fillna(-1, inplace=True)
+    for col in categorical_cols:
+        batch_data[col] = batch_data[col].map(mapping_dicts[col])
+        batch_data[col].fillna(-1, inplace=True)
 
-        # Handle any remaining NaN values
-        for col in batch_data.columns:
-            if batch_data[col].isnull().any():
-                if batch_data[col].dtype == 'object':
-                    batch_data[col].fillna(batch_data[col].mode()[0], inplace=True)
-                else:
-                    batch_data[col].fillna(batch_data[col].mean(), inplace=True)
+    for col in batch_data.columns:
+        if batch_data[col].isnull().any():
+            if batch_data[col].dtype == 'object':
+                batch_data[col].fillna(batch_data[col].mode()[0], inplace=True)
+            else:
+                batch_data[col].fillna(batch_data[col].mean(), inplace=True)
 
-        # Drop label column if present (for pure prediction)
-        if 'income' in batch_data.columns:
-            batch_data.drop(columns=['income'], inplace=True)
+    if 'income' in batch_data.columns:
+        batch_data.drop(columns=['income'], inplace=True)
 
-        # Predict
-        batch_preds = model.predict(batch_data)
-        batch_data['PredictedClass'] = batch_preds
+    batch_preds = model.predict(batch_data)
+    batch_data['PredictedClass'] = batch_preds
 
-        st.write("✅ Predictions:")
-        st.write(batch_data.head())
+    st.write("✅ Predictions:")
+    st.write(batch_data.head())
 
-        # Download CSV
-        csv = batch_data.to_csv(index=False).encode('utf-8')
-        st.download_button("📥 Download Predictions CSV", csv, file_name='predicted_classes.csv', mime='text/csv')
-
-    except Exception as e:
-        st.error(f"❌ Error in batch prediction: {e}")
+    csv = batch_data.to_csv(index=False).encode('utf-8')
+    st.download_button("📥 Download Predictions CSV", csv, file_name='predicted_classes.csv', mime='text/csv')
