@@ -8,7 +8,7 @@ The model is trained on the **UCI Adult Income Dataset**, and various ML algorit
 ## 🚀 Live Demo
 
 Check out the live version of this project:  
-[![Open in Streamlit](https://static.streamlit.io/badges/streamlit-badge-medium.svg)](https://employee-salary-prediction-using-classification-algorithms.streamlit.app/)
+[![Open in Streamlit]](https://employee-salary-prediction-using-classification-algorithms.streamlit.app/)
 
 > **Tip:** Click the badge to open the app in a new tab.
 
