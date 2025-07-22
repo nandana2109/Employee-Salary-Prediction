@@ -5,6 +5,13 @@ This project is a **Capstone Machine Learning project** focused on predicting wh
 The model is trained on the **UCI Adult Income Dataset**, and various ML algorithms were applied. After comparison, the **GradientBoosting Classifier** was chosen as the best-performing model.
 
 ---
+## 🚀 Live Demo
+
+Check out the live version of this project:  
+[![Open in Streamlit](https://static.streamlit.io/badges/streamlit-badge-medium.svg)](https://employee-salary-prediction-using-classification-algorithms.streamlit.app/)
+
+> **Tip:** Click the badge to open the app in a new tab.
+
 
 ## 📌 Project Objective
 
